@@ -56,6 +56,7 @@ workflows:
                     branches:
                         only: 
                             - master
+                            - TWDU-#1
                             - start
             - approve-deploy:
                 type: approval
