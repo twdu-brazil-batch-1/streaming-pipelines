@@ -17,6 +17,8 @@ jobs:
                     - scala-dependencies-{{ checksum "./RawDataSaver/build.sbt" }}-{{ checksum "./StationConsumer/build.sbt"}}-{{ checksum "./StationTransformerNYC/build.sbt"}}
             - run:
                 command: ./sbin/buildAll.sh
+            - store_test_results:
+                  path: test-results
             - persist_to_workspace:
                 root: /home/circleci/project
                 paths:
