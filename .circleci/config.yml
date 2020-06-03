@@ -64,6 +64,9 @@ workflows:
                             - master
                             - TWDU-#1
                             - start
+            - test:
+                requires:
+                    - build
             - approve-deploy:
                 type: approval
                 requires: 
