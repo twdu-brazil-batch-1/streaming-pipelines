@@ -16,6 +16,12 @@ jobs:
                 keys:
                     - scala-dependencies-{{ checksum "./RawDataSaver/build.sbt" }}-{{ checksum "./StationConsumer/build.sbt"}}-{{ checksum "./StationTransformerNYC/build.sbt"}}
             - run:
+                name: Save test results
+                command: |
+                    mkdir -p ~/test-results/junit/
+                    find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+                when: always
+            - run:
                 command: ./sbin/buildAll.sh
             - persist_to_workspace:
                 root: /home/circleci/project
@@ -54,12 +60,12 @@ workflows:
             - build:
                 filters:
                     branches:
-                        only: 
+                        only:
                             - master
                             - start
             - approve-deploy:
                 type: approval
-                requires: 
+                requires:
                     - build
             - deploy:
                 requires:
