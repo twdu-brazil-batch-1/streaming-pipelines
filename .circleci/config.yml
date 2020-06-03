@@ -42,8 +42,7 @@ jobs:
                   command: ./sbin/testAll.sh
             - store_test_results:
                   root: /home/circleci/project
-                  path:
-                      - test-results/test
+                  path: "testResults"
 
     deploy:
         <<: *defaults
