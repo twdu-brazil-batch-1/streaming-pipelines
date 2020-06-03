@@ -40,6 +40,8 @@ jobs:
                 key: java-dependencies-{{ checksum "./CitibikeApiProducer/build.gradle" }}
                 paths:
                     - "~/.gradle"
+            - store_test_results:
+                path: test-results
 
     deploy:
         <<: *defaults
