@@ -34,6 +34,12 @@ jobs:
                 key: java-dependencies-{{ checksum "./CitibikeApiProducer/build.gradle" }}
                 paths:
                     - "~/.gradle"
+    test:
+        <<: *defaults
+        steps:
+            - checkout
+            - run:
+                  command: ./sbin/testAll.sh
 
     deploy:
         <<: *defaults
@@ -62,6 +68,7 @@ workflows:
                 type: approval
                 requires: 
                     - build
+                    - test
             - deploy:
                 requires:
                     - approve-deploy
