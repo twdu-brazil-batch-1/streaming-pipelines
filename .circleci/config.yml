@@ -16,13 +16,15 @@ jobs:
                 keys:
                     - scala-dependencies-{{ checksum "./RawDataSaver/build.sbt" }}-{{ checksum "./StationConsumer/build.sbt"}}-{{ checksum "./StationTransformerNYC/build.sbt"}}
             - run:
+                command: ./sbin/buildAll.sh
+            - run:
                 name: Save test results
                 command: |
                     mkdir -p ~/test-results/junit/
                     find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
                 when: always
-            - run:
-                command: ./sbin/buildAll.sh
+            - store_test_results:
+                  path: test-results/junit
             - persist_to_workspace:
                 root: /home/circleci/project
                 paths:
@@ -40,8 +42,6 @@ jobs:
                 key: java-dependencies-{{ checksum "./CitibikeApiProducer/build.gradle" }}
                 paths:
                     - "~/.gradle"
-            - store_test_results:
-                path: test-results
 
     deploy:
         <<: *defaults
