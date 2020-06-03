@@ -16,7 +16,11 @@ jobs:
                 keys:
                     - scala-dependencies-{{ checksum "./RawDataSaver/build.sbt" }}-{{ checksum "./StationConsumer/build.sbt"}}-{{ checksum "./StationTransformerNYC/build.sbt"}}
             - run:
-                command: ./sbin/buildAll.sh               
+                command: ./sbin/buildAll.sh
+            - run:
+                command: ./sbin/testAll.sh
+            - store_test_results:
+                path: "testResults"
             - persist_to_workspace:
                 root: /home/circleci/project
                 paths:
@@ -34,15 +38,15 @@ jobs:
                 key: java-dependencies-{{ checksum "./CitibikeApiProducer/build.gradle" }}
                 paths:
                     - "~/.gradle"
-    test:
-        <<: *defaults
-        steps:
-            - checkout
-            - run:
-                  command: ./sbin/testAll.sh
-            - store_test_results:
-                  root: /home/circleci/project
-                  path: "testResults"
+#    test:
+#        <<: *defaults
+#        steps:
+#            - checkout
+#            - run:
+#                  command: ./sbin/testAll.sh
+#            - store_test_results:
+#                  root: /home/circleci/project
+#                  path: "testResults"
 
     deploy:
         <<: *defaults
@@ -67,14 +71,14 @@ workflows:
                             - master
                             - TWDU-#1
                             - start
-            - test:
-                requires:
-                    - build
+#            - test:
+#                requires:
+#                    - build
             - approve-deploy:
                 type: approval
                 requires: 
                     - build
-                    - test
+#                    - test
             - deploy:
                 requires:
                     - approve-deploy
