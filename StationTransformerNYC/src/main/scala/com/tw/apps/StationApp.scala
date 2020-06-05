@@ -84,6 +84,7 @@ object StationApp {
       .selectExpr("CAST(value AS STRING)")
       .writeStream
       .format("kafka")
+      .option("failOnDataLoss", false)
       .outputMode("complete")
       .option("checkpointLocation", checkpointLocation)
       .option("topic", stationDataNYC)

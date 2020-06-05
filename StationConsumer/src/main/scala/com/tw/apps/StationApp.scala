@@ -60,6 +60,7 @@ object StationApp {
       .map(_._2)
       .writeStream
       .format("overwriteCSV")
+      .option("failOnDataLoss", false)
       .outputMode("complete")
       .option("header", true)
       .option("truncate", false)
