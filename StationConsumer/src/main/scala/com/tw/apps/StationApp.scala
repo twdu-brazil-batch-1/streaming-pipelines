@@ -52,8 +52,8 @@ object StationApp {
       .selectExpr("CAST(value AS STRING) as raw_payload")
       .transform(sfStationStatusJson2DF(_, spark))
 
-    sfStationDF
-//      .union(sfStationDF)
+    nycStationDF
+      .union(sfStationDF)
       .as[StationData]
       .groupByKey(r=>r.station_id)
       .reduceGroups((r1,r2)=>if (r1.last_updated > r2.last_updated) r1 else r2)
