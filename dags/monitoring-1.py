@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(2020, 6, 5),
+    'start_date': datetime(2020, 6, 8),
     'email': ['airflow@example.com'],
     'email_on_failure': False,
     'email_on_retry': False,
@@ -25,16 +25,16 @@ dag = DAG('monitoring_CSV_1', default_args=default_args)
 read_csv_cmd = """
 export AWS_DEFAULT_REGION=us-east-2
 
-========SSH EMR========
+echo ========SSH EMR========
 ssh emr-master.twdu-brazil-batch-1.training
 
-=======GET CREATION TIME========
+echo =======GET CREATION TIME========
 
 csv_create_time=hadoop fs -stat "%y" /tw/stationMart/data/_SUCCESS
 
 echo csv_create_time
 
-=====COMPARE DATES========
+echo =====COMPARE DATES========
 """
 
 read_csv_task = BashOperator(
