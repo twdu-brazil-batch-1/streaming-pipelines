@@ -30,9 +30,9 @@ ssh emr-master.twdu-brazil-batch-1.training
 
 echo =======GET CREATION TIME========
 
-csv_create_time=hadoop fs -stat "%y" /tw/stationMart/data/_SUCCESS
+export csv_create_time=hadoop fs -stat "%y" /tw/stationMart/data/_SUCCESS
 
-echo csv_create_time
+echo $csv_create_time
 
 echo =====COMPARE DATES========
 """
