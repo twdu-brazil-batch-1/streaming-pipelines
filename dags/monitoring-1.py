@@ -35,10 +35,15 @@ echo csv_create_time
 echo =====COMPARE DATES========
 """
 
+installParamiko = BashOperator(
+    task_id="instal_paramiko",
+    bash_command="""pip install paramiko""",
+    dag=dag)
+
 read_csv_task = SSHExecuteOperator(
     task_id="read_csv_file",
     bash_command=read_csv_cmd,
     ssh_hook=sshHook,
     dag=dag)
 
-read_csv_task
+installParamiko >> read_csv_task
