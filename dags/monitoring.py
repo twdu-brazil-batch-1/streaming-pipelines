@@ -13,7 +13,7 @@ default_args = {
     'email': ['airflow@example.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    'schedule_interval':'@once',
+    'schedule_interval':None,
     'retries': 0,
     'retry_delay': timedelta(minutes=5),
 }
