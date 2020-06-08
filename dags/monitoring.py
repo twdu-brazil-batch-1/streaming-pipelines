@@ -13,7 +13,7 @@ default_args = {
     'email': ['airflow@example.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    'schedule_interval':None,
+    'schedule_interval': None,
     'retries': 0,
     'retry_delay': timedelta(minutes=5),
 }
@@ -25,9 +25,16 @@ dag = DAG('monitoring_CSV', default_args=default_args)
 read_csv_cmd = """
 export AWS_DEFAULT_REGION=us-east-2
 
-echo 'Hello world!'
-echo $AWS_DEFAULT_REGION
+========SSH EMR========
+ssh emr-master.twdu-brazil-batch-1.training
 
+=======GET CREATION TIME========
+
+csv_create_time=hadoop fs -stat "%y" /tw/stationMart/data/_SUCCESS
+
+echo csv_create_time
+
+=====COMPARE DATES========
 """
 
 read_csv_task = BashOperator(
