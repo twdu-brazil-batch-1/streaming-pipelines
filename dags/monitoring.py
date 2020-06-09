@@ -5,15 +5,9 @@ from airflow.operators.bash_operator import BashOperator
 from datetime import datetime, timedelta, date, time
 
 default_args = {
-    'owner': 'airflow',
-    'depends_on_past': False,
+    'owner': 'TWDU_brasil_batch_1',
     'start_date': datetime(2020, 6, 9),
-    'email': ['airflow@example.com'],
-    'email_on_failure': False,
-    'email_on_retry': False,
-    'schedule_interval': None,
-    'retries': 0,
-    'retry_delay': timedelta(minutes=5),
+    'schedule_interval': "*/10 * * * *"
 }
 
 def read_csv_timestamp():
@@ -57,9 +51,7 @@ def is_csv_updated(**context):
             raise ValueError('CSV file has not updated in last 5 minutes!')
 
 with DAG('CSV_monitor_1', 
-    default_args=default_args,
-    schedule_interval=None,
-    catchup=False) as dag:
+    default_args=default_args) as dag:
 
     read_csv_task = BashOperator(
         task_id="read_csv_file",
