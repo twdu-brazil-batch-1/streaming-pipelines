@@ -2,7 +2,7 @@ from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.bash_operator import BashOperator
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date, time
 
 default_args = {
     'owner': 'airflow',
@@ -22,11 +22,12 @@ def read_csv_timestamp():
       
       echo $TIMESTAMP
     """
-def convert_to_unix(input_timestamp):
+
+def convert_to_date_time(input_timestamp):
     input_timestamp_split = input_timestamp.split(" ")
 
     date_split = input_timestamp_split[0]
-    date_list = date.split("-")
+    date_list = date_split.split("-")
     convert_date_to_int = list(map(int, date_list))
 
     hour = input_timestamp_split[1]
@@ -34,16 +35,26 @@ def convert_to_unix(input_timestamp):
     convert_hour_to_int = list(map(int, hour_list))
 
     date_converted = date(convert_date_to_int[0], convert_date_to_int[1], convert_date_to_int[2])
-    hour_converted = datetime.time(convert_hour_to_int[0], convert_hour_to_int[1], convert_hour_to_int[2])
+    hour_converted = time(convert_hour_to_int[0], convert_hour_to_int[1], convert_hour_to_int[2])
 
-    final_date_converted = datetime.datetime.combine(date_converted, hour_converted)
+    final_date_converted = datetime.combine(date_converted, hour_converted)
 
-    return final_date_converted.strftime('%s')
+    return final_date_converted
 
 def is_csv_updated(**context):
-    last_csv_update = context['task_instance'].xcom_pull(task_ids='read_csv_file', key='return_value')
-    print("CSV file was last updated at", last_csv_update)
-    return last_csv_update
+    timestamp_from_csv = str(context['task_instance'].xcom_pull(task_ids='read_csv_file', key='return_value'))
+
+    print("CSV file was last updated at", timestamp_from_csv)
+
+    date_from_file = convert_to_date_time(timestamp_from_csv)
+
+    date_now = convert_to_date_time(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    print("Now time is", date_now.strftime("%Y-%m-%d %H:%M:%S"))
+
+    minutes_diff = date_now - date_from_file
+
+    if minutes_diff > timedelta(minutes=5):
+            raise ValueError('CSV file has not updated in last 5 minutes!')
 
 with DAG('CSV_monitor_1', 
     default_args=default_args,
