@@ -65,11 +65,6 @@ object StationApp {
       .reduceGroups((r1,r2)=>if (r1.last_updated > r2.last_updated) r1 else r2)
       .map(_._2)
       .formatLastUpdatedDate(dateFormat, spark)
-      .withColumn("year", year($"last_updated"))
-      .withColumn("month", month($"last_updated"))
-      .withColumn("day", dayofmonth($"last_updated"))
-      .withColumn("hour", hour($"last_updated"))
-      .withColumn("minute", minute($"last_updated"))
       .writeStream
       .format("overwriteCSV")
       .option("failOnDataLoss", false)
