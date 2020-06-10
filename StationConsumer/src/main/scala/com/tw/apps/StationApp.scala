@@ -65,7 +65,7 @@ object StationApp {
       .reduceGroups((r1,r2)=>if (r1.last_updated > r2.last_updated) r1 else r2)
       .map(_._2)
       .formatLastUpdatedDate(dateFormat, spark)
-      .withColumn("date_col", from_unixtime(col("timestamp"), "yyyyMMddhh"))
+      .withColumn("date_col", from_unixtime(col("last_updated"), "yyyyMMddhh"))
       .withColumn("year", year(col("date_col")))
       .withColumn("month", month(col("date_col")))
       .withColumn("day", dayofmonth(col("date_col")))
