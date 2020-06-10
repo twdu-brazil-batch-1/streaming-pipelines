@@ -61,11 +61,11 @@ def push_metric(metric_value):
     cloudwatch.put_metric_data(
         MetricData=[
             {
-                'MetricName': 'failed_to_update',
+                'MetricName': 'files failed to update',
                 'Dimensions': [
                     {
                         'Name': 'Monitoring CSV File',
-                        'Value': 'airflow'
+                        'Value': 'read_csv_hdfs'
                     },
                 ],
                 'Unit': 'None',
