@@ -7,8 +7,8 @@ from datetime import datetime, timedelta, date, time
 
 default_args = {
     'owner': 'TwoWheelers',
-    'start_date': datetime(2020, 6, 9),
-    'schedule_interval': "*/10 * * * *"
+    'start_date': datetime(2020, 6, 10, 21, 35),
+    'depends_on_past': False
 }
 
 def read_csv_timestamp():
@@ -54,19 +54,17 @@ def is_csv_updated(**context):
             raise ValueError('CSV file has not updated in last 5 minutes!')
 
 def push_metric(metric_value):
-    print("Publishing metric to AWS Cloudwatch ")
+    print("Publishing metric to AWS Cloudwatch ", metric_value)
 
-    cloudwatch = boto3.client(
-        'cloudwatch',
-        region_name='us-east-2')
+    cloudwatch = boto3.client('cloudwatch', region_name='us-east-2')
 
     cloudwatch.put_metric_data(
         MetricData=[
             {
-                'MetricName': 'is_csv_updated',
+                'MetricName': 'failed_to_update',
                 'Dimensions': [
                     {
-                        'Name': 'source',
+                        'Name': 'Monitoring CSV File',
                         'Value': 'airflow'
                     },
                 ],
@@ -80,7 +78,9 @@ def push_metric(metric_value):
     print("Metric published to AWS Cloudwatch ")
 
 with DAG('CSV_monitor_1', 
-    default_args=default_args) as dag:
+    default_args=default_args,
+    schedule_interval='*/5 * * * *'
+    ) as dag:
 
     read_csv_task = BashOperator(
         task_id="read_csv_file",
