@@ -1,3 +1,4 @@
+import boto3
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.bash_operator import BashOperator
@@ -5,7 +6,7 @@ from airflow.operators.bash_operator import BashOperator
 from datetime import datetime, timedelta, date, time
 
 default_args = {
-    'owner': 'TWDU_brasil_batch_1',
+    'owner': 'TwoWheelers',
     'start_date': datetime(2020, 6, 9),
     'schedule_interval': "*/10 * * * *"
 }
@@ -47,8 +48,36 @@ def is_csv_updated(**context):
 
     minutes_diff = date_now - date_from_file
 
+    push_metric(int(minutes_diff > timedelta(minutes=5)))
+
     if minutes_diff > timedelta(minutes=5):
             raise ValueError('CSV file has not updated in last 5 minutes!')
+
+def push_metric(metric_value):
+    print("Publishing metric to AWS Cloudwatch ")
+
+    cloudwatch = boto3.client(
+        'cloudwatch',
+        region_name='us-east-2')
+
+    cloudwatch.put_metric_data(
+        MetricData=[
+            {
+                'MetricName': 'is_csv_updated',
+                'Dimensions': [
+                    {
+                        'Name': 'source',
+                        'Value': 'airflow'
+                    },
+                ],
+                'Unit': 'None',
+                'Value': metric_value,
+            },
+        ],
+        Namespace='TwoWheelers'
+    )
+
+    print("Metric published to AWS Cloudwatch ")
 
 with DAG('CSV_monitor_1', 
     default_args=default_args) as dag:
