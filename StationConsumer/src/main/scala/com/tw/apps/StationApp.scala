@@ -65,6 +65,12 @@ object StationApp {
       .reduceGroups((r1,r2)=>if (r1.last_updated > r2.last_updated) r1 else r2)
       .map(_._2)
       .formatLastUpdatedDate(dateFormat, spark)
+      .withColumn("date_col", from_unixtime(col("timestamp"), "yyyyMMddhh"))
+      .withColumn("year", year(col("date_col")))
+      .withColumn("month", month(col("date_col")))
+      .withColumn("day", dayofmonth(col("date_col")))
+      .withColumn("hour", hour(col("date_col")))
+      .drop("date_col")
       .writeStream
       .format("overwriteCSV")
       .option("failOnDataLoss", false)
@@ -73,6 +79,7 @@ object StationApp {
       .option("truncate", false)
       .option("checkpointLocation", checkpointLocation)
       .option("path", outputLocation)
+      .partitionBy("year", "month", "day", "hour")
       .start()
       .awaitTermination()
 
