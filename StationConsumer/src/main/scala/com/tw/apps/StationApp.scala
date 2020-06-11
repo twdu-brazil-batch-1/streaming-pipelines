@@ -70,6 +70,7 @@ object StationApp {
       .withColumn("day", dayofmonth(col("last_updated")))
       .withColumn("hour", hour(col("last_updated")))
       .writeStream
+      .partitionBy("year", "month", "day", "hour")
       .format("overwriteCSV")
       .option("failOnDataLoss", false)
       .outputMode("complete")
@@ -77,7 +78,6 @@ object StationApp {
       .option("truncate", false)
       .option("checkpointLocation", checkpointLocation)
       .option("path", outputLocation)
-      .partitionBy("year", "month", "day", "hour")
       .start()
       .awaitTermination()
 
