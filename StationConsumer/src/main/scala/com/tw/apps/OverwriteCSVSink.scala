@@ -15,9 +15,9 @@ class OverwriteCSVSink(sqlContext: SQLContext,
 
     data.sparkSession.createDataFrame(
       data.sparkSession.sparkContext.parallelize(data.collect()), data.schema)
-      .repartition(1)
       .write
       .mode(SaveMode.Overwrite)
+      .partitionBy(partitionColumns:_*)
       .format("csv")
       .option("header", parameters.get("header").orNull)
       .option("truncate", parameters.get("truncate").orNull)
